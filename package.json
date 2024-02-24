@@ -1,6 +1,6 @@
 {
   "name": "xgify",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "gif tool",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

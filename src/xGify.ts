@@ -1,8 +1,8 @@
 import prettyBytes from "pretty-bytes";
 import sharp from "sharp";
 
-import isGif from "is-gif";
-import gifsicle from "gifsicle";
+const isGif = require("is-gif");
+const gifsicle = require("gifsicle");
 const execBuffer = require("exec-buffer");
 
 export type Arguments = (string | number)[];

@@ -67,7 +67,7 @@ Available methods:
   await xGify.scale(0.5); // 50%
   await xGify.scale(0.23); // 23%
   ```
-- `cut`: Cut the gif to the specified dimensions with provided start-end frames or **callback**.
+- `cut`: Cut the gif to the specified frames with provided [start, end] frames or **callback**.
 
   ```ts
   await xGify.cut([0, 200]);

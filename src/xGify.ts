@@ -8,6 +8,7 @@ const execBuffer = require("exec-buffer");
 export type Arguments = (string | number)[];
 export type FrameDimensions = { width: number; height: number };
 export type CroppingPoints = { x1: number; y1: number; x2: number; y2: number };
+export type RotateDegrees = 90 | 180 | 270;
 
 type ActionLog = Awaited<ReturnType<xGify["metadata"]>> & {
   action: string;
@@ -32,7 +33,7 @@ export class xGify {
 
   constructor(gifBuffer: Buffer) {
     if (!Buffer.isBuffer(gifBuffer) || !isGif(gifBuffer)) {
-      throw new Error("Invalid input");
+      throw new Error("Invalid gif buffer provided.");
     }
     this.fileBuffer = gifBuffer;
   }
@@ -44,7 +45,7 @@ export class xGify {
     return this;
   }
 
-  async centerCrop() {
+  async centerSquareCrop() {
     await this.crop(({ height, width }) => {
       const size = Math.min(height, width);
       const x1 = Math.floor((width - size) / 2);
@@ -68,7 +69,6 @@ export class xGify {
   }
 
   async colors(colorsFactor: number) {
-    // const args: Arguments = ["--colors", colorsFactor];
     this.staticArgs = ["--colors", colorsFactor];
     await this.process([]);
     return this;
@@ -145,6 +145,12 @@ export class xGify {
     return this;
   }
 
+  async rotate(degrees: RotateDegrees) {
+    const args: Arguments = [`--rotate-${degrees}`];
+    await this.process([], args);
+    return this;
+  }
+
   async metadata() {
     const metadata = await sharp(this.fileBuffer, {
       animated: true,
@@ -158,7 +164,16 @@ export class xGify {
     const fps = Math.round(1 / (delay / 100));
     const { size, prettySize } = this;
 
-    return { delay, frames, height, width, duration, fps, size, prettySize };
+    return {
+      delay,
+      frames,
+      height,
+      width,
+      duration,
+      fps,
+      size,
+      prettySize,
+    };
   }
 
   protected async process(

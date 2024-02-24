@@ -10,10 +10,6 @@ export type FrameDimensions = { width: number; height: number };
 export type CroppingPoints = { x1: number; y1: number; x2: number; y2: number };
 export type RotateDegrees = 90 | 180 | 270;
 
-type ActionLog = Awaited<ReturnType<xGify["metadata"]>> & {
-  action: string;
-};
-
 interface ProcessOptions {
   saveToBuffer?: boolean;
 }
@@ -21,16 +17,26 @@ interface ProcessOptions {
 export class xGify {
   public fileBuffer: Buffer;
   private staticArgs: Arguments = [];
-  public actionLog: ActionLog[] = [];
 
+  /**
+   * Get size of the gif buffer in bytes.
+   * @returns {number} Size of the gif buffer in bytes.
+   */
   get size() {
     return this.fileBuffer.byteLength;
   }
 
+  /**
+   * Get size of the gif buffer in pretty, human readable format.
+   * @returns {number} Size of the gif buffer in pretty format.
+   */
   get prettySize() {
     return prettyBytes(this.size);
   }
 
+  /**
+   * @param gifBuffer - Buffer of the gif file.
+   */
   constructor(gifBuffer: Buffer) {
     if (!Buffer.isBuffer(gifBuffer) || !isGif(gifBuffer)) {
       throw new Error("Invalid gif buffer provided.");
@@ -38,6 +44,10 @@ export class xGify {
     this.fileBuffer = gifBuffer;
   }
 
+  /**
+   * Stretch the gif to square dimensions.
+   * @returns {Promise<xGify>} Returns the instance of xGify.
+   */
   async stretchToFit() {
     const { height } = await this.metadata();
     const args: Arguments = ["--resize", `${height}x${height}`];
@@ -45,6 +55,10 @@ export class xGify {
     return this;
   }
 
+  /**
+   * Center crop the gif to square dimensions.
+   * @returns {Promise<xGify>} Returns the instance of xGify.
+   */
   async centerSquareCrop() {
     await this.crop(({ height, width }) => {
       const size = Math.min(height, width);
@@ -62,21 +76,38 @@ export class xGify {
     });
   }
 
+  /**
+   * Lossy compression of the gif (0-200) where 0 is the best quality.
+   * @returns {Promise<xGify>} Returns the instance of xGify.
+   */
   async lossy(lossyFactor: number) {
     const args: Arguments = [`--lossy=${lossyFactor}`];
     await this.process(args);
     return this;
   }
 
+  /**
+   * Reduce the number of colors in the gif (2-256).
+   * @returns {Promise<xGify>} Returns the instance of xGify.
+   */
   async colors(colorsFactor: number) {
-    this.staticArgs = ["--colors", colorsFactor];
+    const colors = Math.max(2, Math.min(256, colorsFactor));
+    this.staticArgs = ["--colors", colors];
     await this.process([]);
     return this;
   }
 
+  /**
+   * Crop the gif using callback which provides frame dimensions.
+   * @param croppingFn ({ width: number; height: number}) => { x1: number; y1: number; x2: number; y2: number }
+   */
   async crop(
     croppingFn: (frameDimensions: FrameDimensions) => CroppingPoints
   ): Promise<xGify>;
+  /**
+   * Crop the gif using cropping points.
+   * @param cropping: { x1: number; y1: number; x2: number; y2: number }
+   */
   async crop(cropping: CroppingPoints): Promise<xGify>;
   async crop(
     croppingOrFn:
@@ -100,13 +131,26 @@ export class xGify {
     return this;
   }
 
+  /**
+   * Scale the gif by percentage- 100% - 1, 50% - 0.5, 25% - 0.25, etc.
+   * @param scaleFactor - Factor to scale the gif by.
+   * @returns {Promise<xGify>} Returns the instance of xGify.
+   */
   async scale(scaleFactor: number) {
     const args: Arguments = ["--scale", scaleFactor];
     await this.process(args);
     return this;
   }
 
+  /**
+   * Cut the gif using callback which provides total frames.
+   * @param cutFn (totalFrames: number) => [number, number]
+   */
   async cut(cut: [number, number]): Promise<xGify>;
+  /**
+   * Cut the gif using cut points.
+   * @param cutArray: [number, number]
+   */
   async cut(cutFn: (totalFrames: number) => [number, number]): Promise<xGify>;
   async cut(
     cutArrayOrFn: [number, number] | ((totalFrames: number) => [number, number])
@@ -129,6 +173,11 @@ export class xGify {
     return this;
   }
 
+  /**
+   * Change the frame rate of the gif
+   * @param delayFactor - Factor to change the frame rate by - f.e. providing 2 will delete every second frame and multiply delay of every frame by 2.
+   * @returns {Promise<xGify>} Returns the instance of xGify.
+   */
   async frameRate(delayFactor: number) {
     const { frames, delay } = await this.metadata();
 
@@ -145,12 +194,21 @@ export class xGify {
     return this;
   }
 
+  /**
+   * Rotate the gif
+   * @param degrees - Degrees to rotate the gif by - 90, 180, 270.
+   * @returns {Promise<xGify>} Returns the instance of xGify.
+   */
   async rotate(degrees: RotateDegrees) {
     const args: Arguments = [`--rotate-${degrees}`];
     await this.process([], args);
     return this;
   }
 
+  /**
+   * Get metadata of the gif.
+   * @returns {Promise<xGify>} Returns the instance of xGify.
+   */
   async metadata() {
     const metadata = await sharp(this.fileBuffer, {
       animated: true,
@@ -200,16 +258,13 @@ export class xGify {
       });
       if (options.saveToBuffer) {
         this.fileBuffer = newBuffer;
-        this.actionLog.push({
-          ...(await this.metadata()),
-          action: [..._argsBeforeInput, ..._args, ...this.staticArgs]
-            .splice(0, 5)
-            .join(", "),
-        });
       }
       return newBuffer;
     } catch (err: any) {
-      err.message = err.stderr || err.message;
+      err.message =
+        err.stderr ||
+        err.message ||
+        "An error occurred while processing the gif.";
       throw new Error(err);
     }
   }

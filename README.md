@@ -1,4 +1,4 @@
-![banner](https://i.imgur.com/JNkuNye.png)
+![banner](https://i.imgur.com/Zf9cQ7w.png)
 
 Gifsicle promise-buffer-based wrapper for Node.js
 

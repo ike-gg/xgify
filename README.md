@@ -27,7 +27,7 @@ npm install xgify
 
 ## Features
 
-xGify allows you to manipulate gifs in a simple way, with a promise-based API. It uses the `gifsicle` binary to perform the operations.
+xGify allows you to manipulate gifs in a simple way with a promise-based API. It uses the `gifsicle` binary to perform the operations.
 
 Available methods:
 
@@ -43,7 +43,7 @@ Available methods:
   ```ts
   await xGify.lossy(120);
   ```
-- `colors`: Reduce the numbr of colors in the gif
+- `colors`: Reduce the numbr of colors in the gif (2-256)
   ```ts
   await xGify.colors(64);
   ```
@@ -52,7 +52,7 @@ Available methods:
   ```ts
   await xGify.crop({ x1: 0, y1: 0, x2: 100, y2: 75 });
 
-  // or use a callback which provide you current dimensions of the gif as arguemnt
+  // or use a callback which provide you current dimensions of the gif as argument
 
   await xGify.crop((frameDimensions) => {
     // frameDimensions: {width: number, height: number}
@@ -72,7 +72,7 @@ Available methods:
   ```ts
   await xGify.cut([0, 200]);
 
-  // or use a callback which provide you the number of frames in the gif as arguemnt
+  // or use a callback which provide you the number of frames in the gif as argument
 
   await xGify.cut((totalFrames) => {
     const halfFrames = Math.floor(totalFrames / 2);

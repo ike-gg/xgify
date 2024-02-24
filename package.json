@@ -1,6 +1,6 @@
 {
   "name": "xgify",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Gifsicle promise-buffer-based wrapper for Node.js",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

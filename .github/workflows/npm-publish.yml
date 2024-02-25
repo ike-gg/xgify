@@ -1,10 +1,9 @@
 name: Publish nodejs package
 
 on:
-  push:
-    branches:
-      - main
-
+  release:
+    types: [published]
+    
 jobs:
   publish-npm:
     runs-on: ubuntu-latest

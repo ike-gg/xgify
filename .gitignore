@@ -1,6 +1,6 @@
 /dist
 /node_modules
-/test
+/internaltests
 
 .env
 .DS_Store

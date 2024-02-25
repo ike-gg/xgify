@@ -1,6 +1,7 @@
 /src
 /node_modules
-/test
+/internaltests
+/tests
 /.github
 
 .env

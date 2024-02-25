@@ -22,40 +22,23 @@ interface Options {
   outputPath?: string;
 }
 
-export const execBuffer = (opts: Options): Promise<Buffer> => {
-  const { inputs, bin, args, inputPath, outputPath } = { ...opts };
+export const execBuffer = async (opts: Options): Promise<Buffer> => {
+  const { inputs, bin, args, inputPath, outputPath } = opts;
 
-  if (!Array.isArray(inputs) || !inputs.every(Buffer.isBuffer)) {
-    return Promise.reject(new Error("Inputs are required and must be buffers"));
-  }
-
-  if (typeof bin !== "string") {
-    return Promise.reject(new Error("Binary is required"));
-  }
-
-  if (!Array.isArray(args)) {
-    return Promise.reject(new Error("Arguments are required"));
+  if (!inputs.every(Buffer.isBuffer)) {
+    throw new Error("Inputs are required and must be buffers");
   }
 
   const inputPaths: string[] = inputs.map(() => inputPath || temporaryFile());
   const outputFilePath: string = outputPath || temporaryFile();
 
-  const modifiedArgs = args
-    .flatMap((arg) => {
-      console.log(arg);
-      return arg === input
-        ? inputPaths.length === 1
-          ? inputPaths[0]
-          : inputPaths
-        : arg === output
-        ? outputFilePath
-        : arg;
-    })
-    .map(String);
+  const modifiedArgs = args.flatMap((arg) => {
+    if (arg === input) return inputPaths;
+    if (arg === output) return outputFilePath;
+    return String(arg);
+  });
 
-  console.log(modifiedArgs);
-
-  const writePromises: Promise<void>[] = inputs.map((inputBuffer, index) =>
+  const writePromises = inputs.map((inputBuffer, index) =>
     fs.writeFile(inputPaths[index], inputBuffer)
   );
 

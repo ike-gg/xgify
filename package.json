@@ -13,8 +13,8 @@
   "homepage": "https://github.com/ike-gg/xgify",
   "scripts": {
     "build": "tsup",
-    "test": "ts-node test/index.ts",
-    "buildtest": "ts-node test/buildTest.ts"
+    "test": "vitest",
+    "internaltest": "ts-node test/index.ts"
   },
   "keywords": [
     "gif",
@@ -33,7 +33,8 @@
     "@types/is-gif": "^4.0.2",
     "@types/node": "^20.11.20",
     "tsup": "^8.0.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.3.1"
   },
   "dependencies": {
     "execa": "^8.0.1",

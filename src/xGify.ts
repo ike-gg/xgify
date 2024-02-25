@@ -148,7 +148,7 @@ export class xGify {
    */
   async cut(cut: [number, number]): Promise<xGify>;
   /**
-   * Cut the gif using cut points.
+   * Cut the gif using cutting [start, end] frames.
    * @param cutArray: [number, number]
    */
   async cut(cutFn: (totalFrames: number) => [number, number]): Promise<xGify>;

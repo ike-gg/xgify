@@ -6,12 +6,17 @@
     "strictNullChecks": false,
     "target": "ES2022",
     "moduleResolution": "Node",
-    "module": "CommonJS",
+    "module": "ESNext",
     "declaration": true,
     "isolatedModules": true,
     "noEmit": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "allowImportingTsExtensions": true
   },
   "include": ["src"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  }
 }

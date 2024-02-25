@@ -1,11 +1,11 @@
 import prettyBytes from "pretty-bytes";
 import sharp from "sharp";
 
-const isGif = require("is-gif");
-const gifsicle = require("gifsicle");
-const execBuffer = require("exec-buffer");
+import isGif from "is-gif";
+import gifsiclePath from "gifsicle";
+import { execBuffer, input, output } from "./execBuffer";
 
-export type Arguments = (string | number)[];
+export type Arguments = (string | number | Symbol)[];
 export type FrameDimensions = { width: number; height: number };
 export type CroppingPoints = { x1: number; y1: number; x2: number; y2: number };
 export type RotateDegrees = 90 | 180 | 270;
@@ -148,7 +148,7 @@ export class xGify {
    */
   async cut(cut: [number, number]): Promise<xGify>;
   /**
-   * Cut the gif using cut points.
+   * Cut the gif using cutting [start, end] frames.
    * @param cutArray: [number, number]
    */
   async cut(cutFn: (totalFrames: number) => [number, number]): Promise<xGify>;
@@ -234,6 +234,19 @@ export class xGify {
     };
   }
 
+  async combine(...gifBuffers: Buffer[]) {
+    try {
+      const buferek = await execBuffer({
+        args: ["--no-warnings", "--merge", input, "-O3", "-o", output],
+        bin: gifsiclePath,
+        inputs: [this.fileBuffer, ...gifBuffers],
+      });
+      this.fileBuffer = buferek;
+    } catch (error) {
+      console.log("combining failed:", error);
+    }
+  }
+
   protected async process(
     _args: Arguments,
     _argsBeforeInput: Arguments = [],
@@ -242,18 +255,18 @@ export class xGify {
     const args: Arguments = [
       "--no-warnings",
       ..._argsBeforeInput,
-      execBuffer.input,
+      input,
       ..._args,
       ...this.staticArgs,
       "-O3",
       "-o",
-      execBuffer.output,
+      output,
     ];
 
     try {
       const newBuffer = await execBuffer({
-        input: this.fileBuffer,
-        bin: gifsicle,
+        inputs: [this.fileBuffer],
+        bin: gifsiclePath,
         args,
       });
       if (options.saveToBuffer) {

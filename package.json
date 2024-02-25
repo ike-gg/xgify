@@ -4,6 +4,7 @@
   "description": "Gifsicle promise-buffer-based wrapper for Node.js",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "type": "module",
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
@@ -12,7 +13,8 @@
   "homepage": "https://github.com/ike-gg/xgify",
   "scripts": {
     "build": "tsup",
-    "test": "ts-node test/index.ts"
+    "test": "ts-node test/index.ts",
+    "buildtest": "ts-node test/buildTest.ts"
   },
   "keywords": [
     "gif",
@@ -34,10 +36,12 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "exec-buffer": "^3.2.0",
-    "gifsicle": "^5.3.0",
-    "is-gif": "^1.0.0",
+    "execa": "^8.0.1",
+    "gifsicle": "^7.0.1",
+    "is-gif": "^4.0.1",
     "pretty-bytes": "^5.6.0",
-    "sharp": "^0.32.6"
+    "rimraf": "^5.0.5",
+    "sharp": "^0.32.6",
+    "tempy": "^3.1.0"
   }
 }

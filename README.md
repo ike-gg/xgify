@@ -2,6 +2,8 @@
 
 Gifsicle promise-buffer-based wrapper for Node.js
 
+> ESM only package, if complain- [read it](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c)
+
 ```ts
 import { xGify } from "xgify";
 
@@ -19,7 +21,7 @@ gif.prettySize; // 406 kB
 fs.writeFileSync("output.gif", gif.fileBuffer);
 ```
 
-## Instalation
+## Installation
 
 ```sh
 npm install xgify

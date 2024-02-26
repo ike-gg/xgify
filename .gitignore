@@ -1,6 +1,8 @@
 /dist
 /node_modules
-/test
+/internal
 
 .env
 .DS_Store
+
+tests/output.gif

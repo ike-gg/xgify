@@ -11,6 +11,9 @@
     "url": "https://github.com/ike-gg/xgify"
   },
   "homepage": "https://github.com/ike-gg/xgify",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "build": "tsup",
     "test": "vitest",
